@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ByteFlow 工作区 - 智能报告生成</title>
+    <link rel="stylesheet" href="/workspace.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>ByteFlow 工作区</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">返回首页</a>
+                <button class="nav-btn" onclick="clearHistory()">清空历史</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main class="workspace-main">
+        <!-- 上方配置区域 -->
+        <div class="config-section">
+            <div class="config-tabs">
+                <button class="tab-btn active" data-tab="report"><i class="fas fa-file-alt"></i> 报告生成</button>
+                <button class="tab-btn" data-tab="baidu"><i class="fas fa-search"></i> 百度API测试</button>
+                <button class="tab-btn" data-tab="mcp"><i class="fas fa-plug"></i> MCP测试</button>
+            </div>
+            
+            <!-- 报告生成配置 -->
+            <div class="tab-content active" id="report-tab">
+                <div class="config-options">
+                    <div class="option-group">
+                        <h4><i class="fas fa-cogs"></i> 数据源配置</h4>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="useBaiduAPI" name="useBaiduAPI">
+                                <span class="checkmark"></span>
+                                使用百度搜索API
+                                <small>获取实时数据和最新信息</small>
+                            </label>
+                            
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="useBailian" name="useBailian">
+                                <span class="checkmark"></span>
+                                使用智谱MCP
+                                <small>增强模型能力和工具调用</small>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="option-group">
+                        <h4><i class="fas fa-robot"></i> 模型配置</h4>
+                        <div class="model-select">
+                            <label for="modelProvider">模型提供商：</label>
+                            <select id="modelProvider" name="modelProvider">
+                                <option value="ollama" selected>Ollama (本地)</option>
+                                <option value="qwen">通义千问</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 百度API测试区域 -->
+            <div class="tab-content" id="baidu-tab">
+                <div class="full-page-test">
+                    <h4><i class="fas fa-key"></i> 百度API配置与测试</h4>
+                    <div class="api-config">
+                        <div class="form-group">
+                            <label for="baiduApiKey">百度API密钥：</label>
+                            <div class="input-with-btn">
+                                <input type="password" id="baiduApiKey" placeholder="请输入你的百度API密钥">
+                                <button type="button" class="toggle-password" onclick="togglePassword('baiduApiKey')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="testQuery">测试查询：</label>
+                            <input type="text" id="testQuery" class="form-input" placeholder="输入测试查询内容" value="人工智能的发展现状">
+                        </div>
+                        
+                        <div class="test-actions">
+                            <button type="button" class="test-btn" onclick="testBaiduAPI()">
+                                <i class="fas fa-play"></i> 测试连接
+                            </button>
+                            <button type="button" class="save-btn" onclick="saveBaiduConfig()">
+                                <i class="fas fa-save"></i> 保存配置
+                            </button>
+                            <button type="button" class="clear-btn" onclick="clearBaiduResult()">
+                                <i class="fas fa-trash"></i> 清除结果
+                            </button>
+                        </div>
+                        
+                        <div class="test-result" id="baiduTestResult">
+                            <!-- 测试结果将在这里显示 -->
+                        </div>
+                        
+                        <!-- 详细返回内容显示区域 -->
+                        <div class="response-detail" id="baiduResponseDetail" style="display: none;">
+                            <h5><i class="fas fa-code"></i> API返回详细内容</h5>
+                            <div class="response-tabs">
+                                <button class="response-tab-btn active" data-tab="formatted">
+                                    <i class="fas fa-list"></i> 格式化显示
+                                </button>
+                                <button class="response-tab-btn" data-tab="raw">
+                                    <i class="fas fa-code"></i> 原始JSON
+                                </button>
+                            </div>
+                            
+                            <div class="response-content">
+                                <div class="response-tab-content active" id="formatted-content">
+                                    <!-- 格式化内容 -->
+                                </div>
+                                <div class="response-tab-content" id="raw-content">
+                                    <pre id="raw-json"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MCP测试区域 -->
+            <div class="tab-content" id="mcp-tab">
+                <div class="full-page-test">
+                    <h4><i class="fas fa-plug"></i> 智谱MCP (Model Context Protocol) 测试</h4>
+                    <div class="api-config">
+                        <div class="form-group">
+                            <label for="mcpApiKey">MCP API密钥：</label>
+                            <div class="input-with-btn">
+                                <input type="password" id="mcpApiKey" placeholder="请输入你的ZHIPU_API_KEY">
+                                <button type="button" class="toggle-password" onclick="togglePassword('mcpApiKey')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mcpTestQuery">MCP测试查询：</label>
+                            <input type="text" id="mcpTestQuery" class="form-input" placeholder="输入测试搜索内容" value="AI技术最新发展">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mcpMaxResults">最大结果数：</label>
+                            <select id="mcpMaxResults" class="form-input">
+                                <option value="5">5条结果</option>
+                                <option value="10" selected>10条结果</option>
+                                <option value="20">20条结果</option>
+                            </select>
+                        </div>
+                        
+                        <div class="test-actions">
+                            <button type="button" class="test-btn" onclick="testMcpAPI()">
+                                <i class="fas fa-play"></i> 测试连接
+                            </button>
+                            <button type="button" class="save-btn" onclick="saveMcpConfig()">
+                                <i class="fas fa-save"></i> 保存配置
+                            </button>
+                            <button type="button" class="clear-btn" onclick="clearMcpResult()">
+                                <i class="fas fa-trash"></i> 清除结果
+                            </button>
+                        </div>
+                        
+                        <div class="test-result" id="mcpTestResult">
+                            <!-- 测试结果将在这里显示 -->
+                        </div>
+                        
+                        <!-- 详细返回内容显示区域 -->
+                        <div class="response-detail" id="mcpResponseDetail" style="display: none;">
+                            <h5><i class="fas fa-search"></i> MCP搜索结果详情</h5>
+                            <div class="response-tabs">
+                                <button class="response-tab-btn active" data-tab="mcp-formatted">
+                                    <i class="fas fa-list"></i> 格式化显示
+                                </button>
+                                <button class="response-tab-btn" data-tab="mcp-raw">
+                                    <i class="fas fa-code"></i> 原始响应
+                                </button>
+                            </div>
+                            
+                            <div class="response-content">
+                                <div class="response-tab-content active" id="mcp-formatted-content">
+                                    <!-- 格式化内容 -->
+                                </div>
+                                <div class="response-tab-content" id="mcp-raw-content">
+                                    <pre id="mcp-raw-sse"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 工作区容器 - 只在报告生成标签页显示 -->
+        <div class="workspace-container active" id="reportWorkspace">
+            <!-- 左侧输入区域 -->
+            <div class="input-section">
+                <div class="input-card">
+                    <h3><i class="fas fa-edit"></i> 创建新报告</h3>
+                    <form id="reportForm" class="report-form">
+                        <div class="form-group">
+                            <label for="reportTopic">报告主题</label>
+                            <textarea 
+                                id="reportTopic" 
+                                name="topic" 
+                                placeholder="请输入您想要生成的报告主题，例如：人工智能在医疗领域的应用现状与发展趋势"
+                                rows="4"
+                                required
+                            ></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="wordLimit">目标字数</label>
+                                <select id="wordLimit" name="word_limit">
+                                    <option value="800">简要报告 (800字)</option>
+                                    <option value="1000" selected>标准报告 (1000字)</option>
+                                    <option value="1500">详细报告 (1500字)</option>
+                                    <option value="2000">深度报告 (2000字)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="reportType">报告类型</label>
+                                <select id="reportType" name="report_type">
+                                    <option value="analysis" selected>分析报告</option>
+                                    <option value="research">研究报告</option>
+                                    <option value="market">市场报告</option>
+                                    <option value="technical">技术报告</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <div class="button-group">
+                                <button type="submit" class="generate-btn" id="generateBtn">
+                                    <i class="fas fa-magic"></i>
+                                    <span>开始生成报告</span>
+                                </button>
+                                <button type="button" class="cancel-btn" id="cancelBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i>
+                                    <span>停止任务</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- 连接状态指示器 -->
+                <div class="connection-status" id="connectionStatus">
+                    <i class="fas fa-circle"></i>
+                    <span>正在连接...</span>
+                </div>
+            </div>
+
+            <!-- 右侧进度展示区域 -->
+            <div class="progress-section">
+                <!-- 当前任务状态 -->
+                <div class="current-task" id="currentTask" style="display: none;">
+                    <div class="task-header">
+                        <h3><i class="fas fa-cog fa-spin"></i> 正在生成报告</h3>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <span class="progress-text" id="progressText">0%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="task-details">
+                        <div class="task-topic" id="taskTopic"></div>
+                        <div class="task-status" id="taskStatus">准备开始...</div>
+                    </div>
+                </div>
+
+                <!-- 聊天式进度展示 -->
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-header">
+                        <i class="fas fa-comments"></i>
+                        <span>AI工作进度</span>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="welcome-message">
+                            <div class="message bot-message">
+                                <div class="message-avatar">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="message-content">
+                                    <div class="message-text">
+                                        欢迎使用 ByteFlow 智能报告生成系统！<br>
+                                        请在左侧输入您的报告主题，我将协调多个AI专家为您生成高质量的报告。
+                                    </div>
+                                    <div class="message-time">
+                                        <%= new Date().toLocaleTimeString() %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                        <div class="typing-dots">
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                            <div class="dot"></div>
+                        </div>
+                        <span>AI正在工作中...</span>
+                    </div>
+                </div>
+
+                <!-- 结果展示区 -->
+                <div class="result-section" id="resultSection" style="display: none;">
+                    <div class="result-header">
+                        <h3><i class="fas fa-file-alt"></i> 生成结果</h3>
+                        <div class="result-actions">
+                            <button class="action-btn" onclick="downloadReport()">
+                                <i class="fas fa-download"></i> 下载
+                            </button>
+                            <button class="action-btn" onclick="copyReport()">
+                                <i class="fas fa-copy"></i> 复制
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="result-content" id="resultContent">
+                        <!-- 结果内容将在这里显示 -->
+                    </div>
+                    
+                    <div class="result-stats" id="resultStats">
+                        <!-- 统计信息将在这里显示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 加载脚本 -->
+    <script src="/workspace.js"></script>
+</body>
+</html>

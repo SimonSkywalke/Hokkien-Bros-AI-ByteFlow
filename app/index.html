@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能协作平台 - 与智能共创未来</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>智能协作</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="#features" class="nav-link">功能特点</a>
+                <a href="#about" class="nav-link">关于我们</a>
+                <a href="#contact" class="nav-link">联系我们</a>
+                <button class="nav-btn" onclick="window.location.href='/workspace'">开始体验</button>
+            </div>
+            <div class="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容区域 -->
+    <main>
+        <!-- 主要内容区域 -->
+        <section class="hero">
+            <!-- 数字海浪网格 -->
+            <div class="wave-grid" id="waveGrid"></div>
+            
+            <!-- 中心内容 -->
+            <div class="center-content">
+                <h1 class="project-title">ByteFlow</h1>
+                <p class="project-subtitle">基于多AI代理的智能报告生成系统</p>
+                <div class="feature-highlights">
+                    <div class="feature-card">
+                        <i class="fas fa-brain feature-icon"></i>
+                        <h3>多AI代理协作</h3>
+                        <p>集成Ollama、通义千问和智谱AI，实现智能协同</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-search feature-icon"></i>
+                        <h3>智谱MCP搜索</h3>
+                        <p>利用智谱AI的Model Context Protocol获取精准数据</p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-file-alt feature-icon"></i>
+                        <h3>智能报告生成</h3>
+                        <p>自动生成结构化、高质量的分析报告</p>
+                    </div>
+                </div>
+                <button class="start-button" onclick="window.location.href='/workspace'">开始使用</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
